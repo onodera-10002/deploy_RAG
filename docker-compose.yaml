@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # 1. あなたが作るアプリ (FastAPI)
+  app:
+    build: .
+    command: uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - qdrant
+    environment:
+      # ここ重要！ "db" という名前でMySQLに接続する
+      DATABASE_URL: mysql+aiomysql://user:password@db/rag_db
+      # ここ重要！ "qdrant" という名前で接続する
+      QDRANT_URL: http://qdrant:6333
+
+  frontend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8501:8501"  # Streamlitのポート
+    command: >
+      sh -c "pip install streamlit requests && streamlit run app.py"
+    depends_on:
+      - app
+
+  # 2. 会話履歴用DB (MySQL)
+  db:
+    image: mysql:8.0
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: rag_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # 3. ベクトル検索用DB (Qdrant)
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  db_data:
+  qdrant_data:
