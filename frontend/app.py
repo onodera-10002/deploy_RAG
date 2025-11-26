@@ -4,7 +4,7 @@ import requests
 import uuid
 
 # バックエンドのURL (ローカル開発用)
-API_URL = "http://app:8000"  # Docker内通信用
+API_URL = os.getenv("API_URL", "http://app:8000")  # Docker内通信用
 
 st.title("AIチャット")
 
