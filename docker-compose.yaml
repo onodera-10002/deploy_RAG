@@ -17,6 +17,7 @@ services:
       DATABASE_URL: mysql+aiomysql://user:password@db/rag_db
       # ここ重要！ "qdrant" という名前で接続する
       QDRANT_URL: http://qdrant:6333
+      GOOGLE_API_KEY: AIzaSyC8sfG6pAkJgDn11PySpElVCo6y9Tty28Q
 
   frontend:
     image: python:3.11-slim
