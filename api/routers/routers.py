@@ -67,7 +67,7 @@ async def chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
 
     # 質問のベクトル化
     query_embedding = genai.embed_content(
-        model="gemini-embeddings-001",
+        model="models/text-embedding-004",
         content=req.query
     )
     query_vector = query_embedding["embedding"]
@@ -92,11 +92,11 @@ async def chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     [ユーザーの質問]
     {req.query}
     """
-    model = genai.GenarativeModel("gemini-2.5-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(prompt)
     ai_answer = response.text
 
-    await message_crud.createmessage(
+    await message_crud.create_message(
         db = db,
         session_id = req.session_id,
         role = "assistant",
