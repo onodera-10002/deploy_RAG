@@ -66,9 +66,9 @@ async def chat(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     await message_crud.create_message(db=db, session_id=req.session_id, role="user", content=req.query)
 
     # 質問のベクトル化
-    query_embedding = genai.embeddings.get_embedding(
+    query_embedding = genai.embed_content(
         model="gemini-embeddings-001",
-        text=req.query
+        content=req.query
     )
     query_vector = query_embedding["embedding"]
 
